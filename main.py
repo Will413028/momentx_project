@@ -8,6 +8,8 @@ from sqlalchemy.orm import Session
 from config import Settings
 import service
 from db.database import get_db
+import schemas
+
 
 app = FastAPI()
 
@@ -38,8 +40,8 @@ def create_upload_file(settings: Annotated[Settings, Depends(get_settings)], fil
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/ask")
-def ask_question(question: str, db: Session = Depends(get_db)):
+@app.post("/ask", response_model=schemas.Answer)
+def ask_question(question: schemas.Question, db: Session = Depends(get_db)):
     try:
         fake_answer = "this fake answer"
         return {"question":question, "answer": fake_answer}
