@@ -19,7 +19,7 @@ def read_root():
 
 
 @app.post("/uploadfile")
-async def create_upload_file(settings: Annotated[Settings, Depends(get_settings)], file: UploadFile = File(...)):
+def create_upload_file(settings: Annotated[Settings, Depends(get_settings)], file: UploadFile = File(...)):
     try:
         blob_service_client = BlobServiceClient.from_connection_string(settings.connection_string)
 
