@@ -1,7 +1,8 @@
 from pydantic import BaseModel
 
 
-class Question(BaseModel):
+class AskQuestion(BaseModel):
+    document_name: str
     question: str
 
 

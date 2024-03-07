@@ -41,9 +41,18 @@ def create_upload_file(settings: Annotated[Settings, Depends(get_settings)], fil
 
 
 @app.post("/ask", response_model=schemas.Answer)
-def ask_question(question: schemas.Question, db: Session = Depends(get_db)):
+def ask_question(ask_data: schemas.AskQuestion, db: Session = Depends(get_db)):
     try:
+        question = ask_data.question
+        document_name = ask_data.document_name
+
         fake_answer = "this fake answer"
+
+        documwnt = service.get_documwnt_by_name(db, document_name)
+    
+        service.create_question_answer(db, documwnt.id, question, fake_answer)
+    
         return {"question":question, "answer": fake_answer}
+    
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
