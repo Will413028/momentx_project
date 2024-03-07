@@ -4,6 +4,7 @@ from typing import Annotated
 from fastapi import FastAPI, UploadFile, HTTPException, Depends, File 
 from azure.storage.blob import BlobServiceClient
 from sqlalchemy.orm import Session
+from openai import AzureOpenAI
 
 from config import Settings
 import service
@@ -27,6 +28,18 @@ def test_server():
 @app.post("/uploadfile")
 def create_upload_file(settings: Annotated[Settings, Depends(get_settings)], file: UploadFile = File(...), db: Session = Depends(get_db), ):
     try:
+
+        client = AzureOpenAI(
+            api_key = settings.AZURE_OPENAI_API_KEY,  
+            api_version = "2023-05-15",
+            azure_endpoint = settings.AZURE_ENDPOINT
+        )
+
+        embeddings = client.embeddings.create(
+            input = "Your text string goes here",
+            model= settings.AZURE_EMBEDDING_MODEL_NAME
+        )
+    
         service.create_file(db, file.filename)
 
         blob_service_client = BlobServiceClient.from_connection_string(settings.connection_string)
@@ -37,6 +50,7 @@ def create_upload_file(settings: Annotated[Settings, Depends(get_settings)], fil
 
         return {"filename": file.filename, "message": "File uploaded successfully"}
     except Exception as e:
+        print(str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
 
