@@ -28,6 +28,9 @@ def test_server():
 @app.post("/uploadfile")
 def create_upload_file(settings: Annotated[Settings, Depends(get_settings)], file: UploadFile = File(...), db: Session = Depends(get_db), ):
     try:
+        file_content = file.file.read()
+
+        file.file.seek(0)
 
         client = AzureOpenAI(
             api_key = settings.AZURE_OPENAI_API_KEY,  
@@ -36,10 +39,10 @@ def create_upload_file(settings: Annotated[Settings, Depends(get_settings)], fil
         )
 
         embeddings = client.embeddings.create(
-            input = "Your text string goes here",
+            input = file_content.decode('utf-8'),
             model= settings.AZURE_EMBEDDING_MODEL_NAME
         )
-    
+
         service.create_file(db, file.filename)
 
         blob_service_client = BlobServiceClient.from_connection_string(settings.connection_string)
