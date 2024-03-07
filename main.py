@@ -21,6 +21,7 @@ def get_settings():
 def test_server():
     return {"Test"}
 
+
 @app.post("/uploadfile")
 def create_upload_file(settings: Annotated[Settings, Depends(get_settings)], file: UploadFile = File(...), db: Session = Depends(get_db), ):
     try:
@@ -33,5 +34,14 @@ def create_upload_file(settings: Annotated[Settings, Depends(get_settings)], fil
         blob_client.upload_blob(file.file)
 
         return {"filename": file.filename, "message": "File uploaded successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/ask")
+def ask_question(question: str, db: Session = Depends(get_db)):
+    try:
+        fake_answer = "this fake answer"
+        return {"question":question, "answer": fake_answer}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
