@@ -4,8 +4,8 @@ from typing import Annotated
 from fastapi import FastAPI, UploadFile, HTTPException, Depends, File 
 from azure.storage.blob import BlobServiceClient
 from sqlalchemy.orm import Session
-from langchain.vectorstores import Qdrant
 from langchain_openai import AzureOpenAIEmbeddings
+from langchain_community.vectorstores import Qdrant
 
 from config import Settings
 import service
