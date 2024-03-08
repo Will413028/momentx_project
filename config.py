@@ -8,6 +8,8 @@ class Settings(BaseSettings):
     AZURE_OPENAI_API_KEY: str
     AZURE_ENDPOINT: str
     AZURE_EMBEDDING_MODEL_NAME: str
+    QDRANT_URL: str
+    QDRANT_COLLECTION_NAME: str
 
     class Config:
         env_file = ".env"

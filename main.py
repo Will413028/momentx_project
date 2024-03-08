@@ -4,7 +4,8 @@ from typing import Annotated
 from fastapi import FastAPI, UploadFile, HTTPException, Depends, File 
 from azure.storage.blob import BlobServiceClient
 from sqlalchemy.orm import Session
-from openai import AzureOpenAI
+from langchain.vectorstores import Qdrant
+from langchain_openai import AzureOpenAIEmbeddings
 
 from config import Settings
 import service
@@ -32,16 +33,14 @@ def create_upload_file(settings: Annotated[Settings, Depends(get_settings)], fil
 
         file.file.seek(0)
 
-        client = AzureOpenAI(
-            api_key = settings.AZURE_OPENAI_API_KEY,  
-            api_version = "2023-05-15",
-            azure_endpoint = settings.AZURE_ENDPOINT
+        embeddings = AzureOpenAIEmbeddings(
+            api_key=settings.AZURE_OPENAI_API_KEY,
+            azure_endpoint=settings.AZURE_ENDPOINT,
+            azure_deployment=settings.AZURE_EMBEDDING_MODEL_NAME,
+            openai_api_version="2023-05-15",
         )
 
-        embeddings = client.embeddings.create(
-            input = file_content.decode('utf-8'),
-            model= settings.AZURE_EMBEDDING_MODEL_NAME
-        )
+        Qdrant.from_texts([file_content.decode('utf-8')], embeddings, url=settings.QDRANT_URL, collection_name=settings.QDRANT_COLLECTION_NAME)
 
         service.create_file(db, file.filename)
 
