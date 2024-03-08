@@ -1,25 +1,36 @@
 version: "3.5"
 services:
-  app:
-    container_name: LLM_APP
+  qa_system:
+    container_name: qa_system
     build: 
       context: .
       dockerfile: Dockerfile
-    image: llm
+    image: qa_system
     environment:
       container_name: <YOUR_AZURE_BLOB_CONTAINER>
       connection_string: <YOUR_AZURE_BLOB_CONNECTION_STRING>
+      DATABASE_URL: <YOUR_DATABASE_URL>
+      AZURE_OPENAI_API_KEY: <YOUR_AZURE_OPENAI_API_KEY>
+      AZURE_ENDPOINT: <YOUR_AZURE_ENDPOINT>
+      AZURE_EMBEDDING_MODEL_NAME: <YOUR_AZURE_EMBEDDING_MODEL_NAME>
     ports:
       - "8000:8000"
     restart: always
-  db:
+  mysql:
     image: mysql
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:
-      MYSQL_USER: <YOUR_USER_NAME>
+      MYSQL_USER: <YOUR_DB_USER_NAME>
       MYSQL_RANDOM_ROOT_PASSWORD: yes
       MYSQL_PASSWORD: <YOUR_DATABASE_PASSWORD>
       MYSQL_DATABASE: <YOUR_DATABASE_NAME>
     ports:
       - "3306:3306"
+  qdrant:
+    image: qdrant/qdrant
+    restart: always
+    ports:
+      - '6333:6333'
+    volumes:
+      - ./qdrant_storage:/qdrant/storage
