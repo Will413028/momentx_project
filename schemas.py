@@ -7,5 +7,6 @@ class AskQuestion(BaseModel):
 
 
 class Answer(BaseModel):
+    document_name: str
     question: str
     answer: str

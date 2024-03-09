@@ -38,7 +38,7 @@ def ask_question(ask_data: schemas.AskQuestion, db: Session = Depends(get_db)):
         question = ask_data.question
         document_name = ask_data.document_name
 
-        document_vector = crud.vector_db.read_document_vector(document_name)
+        document_vector = crud.vector_db.read_vectors_by_document_name(document_name)
 
         result = generate_question_response(question, document_vector)
 
@@ -46,7 +46,7 @@ def ask_question(ask_data: schemas.AskQuestion, db: Session = Depends(get_db)):
 
         crud.sql_db.create_question_answer_of_document(db, document_name, question, answer)
 
-        return {"question":question, "answer": answer}
+        return {"document_name": document_name, "question":question, "answer": answer}
 
     except Exception as e:
         print(str(e))
