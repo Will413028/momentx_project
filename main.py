@@ -1,12 +1,11 @@
 from fastapi import FastAPI, UploadFile, HTTPException, Depends, File, status
 from sqlalchemy.orm import Session
-from langchain.chains import ConversationalRetrievalChain
 
 import schemas
 import crud.sql_db
 import crud.vector_db
 from db.database import get_db
-from utils.azure import get_azure_chat_open_ai, upload_file_azure_blob
+from utils.azure import upload_file_azure_blob, generate_question_response
 
 
 app = FastAPI()
@@ -41,15 +40,11 @@ def ask_question(ask_data: schemas.AskQuestion, db: Session = Depends(get_db)):
 
         document_vector = crud.vector_db.read_document_vector(document_name)
 
-        azure_chat = get_azure_chat_open_ai()
-
-        qa = ConversationalRetrievalChain.from_llm(llm=azure_chat, retriever=document_vector.as_retriever())
-
-        result = qa({"question": question, 'chat_history': []})
+        result = generate_question_response(question, document_vector)
 
         answer = result['answer']
 
-        crud.sql_db.create_question_answer(db, document_name, question, answer)
+        crud.sql_db.create_question_answer_of_document(db, document_name, question, answer)
 
         return {"question":question, "answer": answer}
 

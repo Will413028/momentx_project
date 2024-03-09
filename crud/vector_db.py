@@ -1,5 +1,5 @@
 from langchain_community.vectorstores import Qdrant
-from utils.azure import get_azure_open_ai_embeddings, get_azure_chat_open_ai, upload_file_azure_blob
+from utils.azure import get_azure_open_ai_embeddings
 from qdrant_client import QdrantClient
 
 from config import settings
@@ -19,4 +19,3 @@ def create_document_vector(file):
 def read_document_vector(document_name):
     
     return Qdrant(client=QDRANT_CLIENT, collection_name=document_name, embeddings=AZURE_EMBEDDINGS)
-

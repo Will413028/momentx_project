@@ -1,6 +1,7 @@
 from azure.storage.blob import BlobServiceClient
 from langchain_openai import AzureOpenAIEmbeddings
 from langchain_openai import AzureChatOpenAI
+from langchain.chains import ConversationalRetrievalChain
 
 from config import settings
 
@@ -31,11 +32,10 @@ def upload_file_azure_blob(file):
     blob_client.upload_blob(file.file)
 
 
-def download_file_azure_blob(filename):
-    blob_service_client = BlobServiceClient.from_connection_string(settings.AZURE_BLOB_CONNECTION_STRING)
-    blob_client = blob_service_client.get_blob_client(container=settings.AZURE_BLOB_CONTAINER, blob=filename)
-    
-    stream = blob_client.download_blob()
-    data = stream.readall()
+def generate_question_response(question, document_vector):
 
-    return data.decode("utf-8")
+    azure_chat = get_azure_chat_open_ai()
+
+    qa = ConversationalRetrievalChain.from_llm(llm=azure_chat, retriever=document_vector.as_retriever())
+
+    return qa({"question": question, 'chat_history': []})
