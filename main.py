@@ -1,17 +1,13 @@
 from fastapi import FastAPI, UploadFile, HTTPException, Depends, File, status
 from sqlalchemy.orm import Session
-from langchain_community.vectorstores import Qdrant
 from langchain.chains import ConversationalRetrievalChain
-from qdrant_client import QdrantClient
 
-import service
 import schemas
-from config import settings
+import crud.sql_db
+import crud.vector_db
 from db.database import get_db
-from utils.azure import get_azure_open_ai_embeddings, get_azure_chat_open_ai, upload_file_azure_blob
+from utils.azure import get_azure_chat_open_ai, upload_file_azure_blob
 
-QDRANT_URL = f"http://{settings.QDRANT_HOST}:{settings.QDRANT_PORT}"
-QDRANT_CLIENT = QdrantClient(host=settings.QDRANT_HOST, port=settings.QDRANT_PORT)
 
 app = FastAPI()
 
@@ -28,13 +24,8 @@ def create_upload_file(file: UploadFile = File(...), db: Session = Depends(get_d
 
         file.file.seek(0)
 
-        file_content = file.file.read()
-
-        embeddings = get_azure_open_ai_embeddings()
-        
-        Qdrant.from_texts([file_content.decode('utf-8')], embeddings, url=QDRANT_URL, collection_name=file.filename)
-
-        service.create_file(db, file.filename)
+        crud.vector_db.create_document_vector(file)
+        crud.sql_db.create_file(db, file.filename)
 
         return {"filename": file.filename, "message": "File uploaded successfully"}
     except Exception as e:
@@ -48,21 +39,17 @@ def ask_question(ask_data: schemas.AskQuestion, db: Session = Depends(get_db)):
         question = ask_data.question
         document_name = ask_data.document_name
 
-        embeddings = get_azure_open_ai_embeddings()
-
-        qdrant = Qdrant(client=QDRANT_CLIENT, collection_name=document_name, embeddings=embeddings)
+        document_vector = crud.vector_db.read_document_vector(document_name)
 
         azure_chat = get_azure_chat_open_ai()
 
-        qa = ConversationalRetrievalChain.from_llm(llm=azure_chat, retriever=qdrant.as_retriever())
+        qa = ConversationalRetrievalChain.from_llm(llm=azure_chat, retriever=document_vector.as_retriever())
 
         result = qa({"question": question, 'chat_history': []})
 
         answer = result['answer']
 
-        documwnt = service.get_documwnt_by_name(db, document_name)
-
-        service.create_question_answer(db, documwnt.id, question, answer)
+        crud.sql_db.create_question_answer(db, document_name, question, answer)
 
         return {"question":question, "answer": answer}
 

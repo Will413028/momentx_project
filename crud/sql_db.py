@@ -25,16 +25,12 @@ def create_file(db: Session, file_name: str):
         )
 
 
-def get_documwnt_by_name(db: Session, name: str) -> models.Document:
-    query = select(models.Document).where(models.Document.name == name)
-    document = db.execute(query).scalar()
-
-    return document
-
-
-def create_question_answer(db: Session, document_id: int, question: str, answer: str):
+def create_question_answer(db: Session, document_name: str, question: str, answer: str):
     try:
-        db_question_answer = models.QuestionAnswer(document_id=document_id, question=question, answer=answer)
+        query = select(models.Document).where(models.Document.name == document_name)
+        document = db.execute(query).scalar()
+
+        db_question_answer = models.QuestionAnswer(document_id=document.id, question=question, answer=answer)
 
         db.add(db_question_answer)
         db.commit()
