@@ -26,14 +26,14 @@ def get_azure_chat_open_ai():
 
 
 def upload_file_azure_blob(file):
-    blob_service_client = BlobServiceClient.from_connection_string(settings.connection_string)
-    blob_client = blob_service_client.get_blob_client(container=settings.container_name, blob=file.filename)
+    blob_service_client = BlobServiceClient.from_connection_string(settings.AZURE_BLOB_CONNECTION_STRING)
+    blob_client = blob_service_client.get_blob_client(container=settings.AZURE_BLOB_CONTAINER, blob=file.filename)
     blob_client.upload_blob(file.file)
 
 
 def download_file_azure_blob(filename):
-    blob_service_client = BlobServiceClient.from_connection_string(settings.connection_string)
-    blob_client = blob_service_client.get_blob_client(container=settings.container_name, blob=filename)
+    blob_service_client = BlobServiceClient.from_connection_string(settings.AZURE_BLOB_CONNECTION_STRING)
+    blob_client = blob_service_client.get_blob_client(container=settings.AZURE_BLOB_CONTAINER, blob=filename)
     
     stream = blob_client.download_blob()
     data = stream.readall()

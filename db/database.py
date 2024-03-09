@@ -2,11 +2,10 @@ from sqlalchemy import create_engine, DateTime, Integer
 from sqlalchemy.orm import sessionmaker, DeclarativeBase, mapped_column
 from sqlalchemy.sql import func
 
-from config import Settings
+from config import settings
 
-settings = Settings()
 
-engine = create_engine(settings.database_url)
+engine = create_engine(settings.DATABASE_URL)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

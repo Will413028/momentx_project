@@ -2,15 +2,16 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    container_name: str
-    connection_string: str
-    database_url: str
+
+    DATABASE_URL: str
+    AZURE_BLOB_CONTAINER: str
+    AZURE_BLOB_CONNECTION_STRING: str
     AZURE_OPENAI_API_KEY: str
     AZURE_ENDPOINT: str
     AZURE_EMBEDDING_MODEL_NAME: str
     AZURE_CHAT_MODEL_NAME: str
-    QDRANT_URL: str
-    QDRANT_COLLECTION_NAME: str
+    QDRANT_HOST: str
+    QDRANT_PORT: str
 
     class Config:
         env_file = ".env"
