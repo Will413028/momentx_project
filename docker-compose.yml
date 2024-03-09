@@ -13,10 +13,14 @@ services:
       AZURE_OPENAI_API_KEY: <YOUR_AZURE_OPENAI_API_KEY>
       AZURE_ENDPOINT: <YOUR_AZURE_ENDPOINT>
       AZURE_EMBEDDING_MODEL_NAME: <YOUR_AZURE_EMBEDDING_MODEL_NAME>
+      AZURE_CHAT_MODEL_NAME: <YOUR_AZURE_CHAT_MODEL_NAME>
+      QDRANT_URL: <YOUR_QDRANT_URL>
+      QDRANT_COLLECTION_NAME: <YOUR_QDRANT_COLLECTION_NAME>
     ports:
       - "8000:8000"
     restart: always
   mysql:
+    container_name: mysql
     image: mysql
     command: --default-authentication-plugin=mysql_native_password
     restart: always
@@ -28,6 +32,7 @@ services:
     ports:
       - "3306:3306"
   qdrant:
+    container_name: qdrant
     image: qdrant/qdrant
     restart: always
     ports:
