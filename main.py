@@ -18,6 +18,10 @@ def test_server():
 
 @app.post("/uploadfile")
 def create_upload_file(file: UploadFile = File(...), db: Session = Depends(get_db)):
+
+    if not file.filename.endswith(".txt"):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Only txt files can be uploaded")
+
     try:
         upload_file_azure_blob(file)
 
