@@ -1,6 +1,5 @@
-from fastapi import HTTPException, status
-from sqlalchemy.orm import Session
 from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 import db.models as models
 
@@ -15,20 +14,17 @@ def create_file(db: Session, file_name: str):
         db.refresh(db_document)
     except Exception as e:
         db.rollback()
-
-        error_message = str(e)
-        print(error_message)
-
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f'File create failed: {error_message}'
-        )
+        print(str(e))
+        raise Exception(f'File create failed: {str(e)}')
 
 
 def create_question_answer_of_document(db: Session, document_name: str, question: str, answer: str):
     try:
         query = select(models.Document).where(models.Document.name == document_name)
         document = db.execute(query).scalar()
+
+        if not document:
+            raise Exception(f"Document with name '{document_name}' not found.")
 
         db_question_answer = models.QuestionAnswer(document_id=document.id, question=question, answer=answer)
 
@@ -37,11 +33,5 @@ def create_question_answer_of_document(db: Session, document_name: str, question
         db.refresh(db_question_answer)
     except Exception as e:
         db.rollback()
-
-        error_message = str(e)
-        print(error_message)
-
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f'Question Answer create failed: {error_message}'
-        )
+        print(str(e))
+        raise Exception(f'Question Answer create failed: {str(e)}')
