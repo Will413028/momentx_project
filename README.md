@@ -27,19 +27,31 @@ curl -X 'POST' 'http://127.0.0.1:8000/ask' -H 'accept: application/json' -H 'Con
 
 ## Database Schema
 
-https://dbdiagram.io/d/QA-system-6500368802bd1c4a5e693886
+<https://dbdiagram.io/d/QA-system-6500368802bd1c4a5e693886>
+
+## Database
+
+### SQL Database: using MySQL
+
+### Vector Database: using Qdrant
+
+---
 
 ## How to run
 
-Use Docker Compose
+### 1. Use Docker Compose
 
 ```bash
 sudo docker compose up -d
 ```
 
-Run server
+### 2. Run local
 
-```bash
+```bash install dependency
+pip install -r requirements.txt
+```
+
+```bash run server
 uvicorn main:app --reload
 ```
 
