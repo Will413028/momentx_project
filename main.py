@@ -11,11 +11,6 @@ from utils.azure import upload_file_azure_blob, generate_question_response
 app = FastAPI()
 
 
-@app.get("/test")
-def test_server():
-    return {"Test"}
-
-
 @app.post("/uploadfile")
 def create_upload_file(file: UploadFile = File(...), db: Session = Depends(get_db)):
 
