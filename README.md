@@ -2,12 +2,16 @@
 
 ## curl test command example
 
+### uploadfile api test
+
 ```bash
 curl -X 'POST' 'http://127.0.0.1:8000/uploadfile' -H 'accept: application/json' -H 'Content-Type: multipart/form-data' -F 'file=@path/to/your/file.txt;type=text/plain'
 
 // file example 
 // -F 'file=@./article.txt;type=text/plain'
 ```
+
+### ask question api test
 
 ```bash
 curl -X 'POST' 'http://127.0.0.1:8000/ask' -H 'accept: application/json' -H 'Content-Type: application/json' -d '{ "document_name": "已上傳的檔案名稱", "question": "想對文件詢問的問題" }'
