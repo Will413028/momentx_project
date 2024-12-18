@@ -23,6 +23,13 @@ curl -X 'POST' 'http://127.0.0.1:8000/ask' -H 'accept: application/json' -H 'Con
 // }
 ```
 
+curl -X 'POST' 'http://127.0.0.1:8000/uploadfile' -H 'accept: application/json' -H 'Content-Type: multipart/form-data' -F 'file=@./articletesttest.txt;type=text/plain'
+
+
+curl -X 'POST' 'http://127.0.0.1:8000/ask' -H 'accept: application/json' -H 'Content-Type: application/json' -d '{ "document_name": "articletesttest.txt", "question": "Please, tell me what your article is about" }'
+
+
+
 ## API Endpoints
 
 `POST /uploadfile` - upload txt file to azure blob
